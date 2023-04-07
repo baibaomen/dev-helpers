@@ -6,7 +6,7 @@ Dev-helpers is a collection of small but useful development and deployment helpe
 
 You can install and configure Git, Nginx, and Certbot on your Debian server with just one line of code, and automatically generate SSL certificates to secure your server:
 ```
-sudo apt update && sudo apt install -y git && git clone https://github.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-debian-with-nginx-and-certbot.sh && ./dev-helpers/setup-debian-with-nginx-and-certbot.sh
+sudo apt update && sudo apt install -y git && rm -rf dev-helpers && git clone https://github.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-debian-with-nginx-and-certbot.sh && ./dev-helpers/setup-debian-with-nginx-and-certbot.sh
 ```
 In the above command, the following steps will be performed automatically:
 
