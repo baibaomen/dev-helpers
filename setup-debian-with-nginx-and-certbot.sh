@@ -56,6 +56,38 @@ server {
 }
 EOF
 
+# Create the default Nginx welcome page if it doesn't exist
+sudo mkdir -p /var/www/html
+if [ ! -f /var/www/html/index.html ]; then
+    sudo tee /var/www/html/index.html > /dev/null << EOF
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+
+<h1>Welcome to nginx!</h1><p>If you see this page, the Nginx web server with SSL certificate auto-renewal has been successfully installed and is working. Additional configuration may be required.</p>
+<p>The automated installation process is powered by <a href="https://github.com/baibaomen/dev-helpers">https://github.com/baibaomen/dev-helpers</a>.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+EOF
+fi
+
 # Enable site
 sudo ln -sf /etc/nginx/sites-available/$domain /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
