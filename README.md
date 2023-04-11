@@ -38,3 +38,8 @@ In the above command, the following steps will be performed automatically:
 5. Update the PATH variable to include Snap binaries.
 6. Install NPM.
 7. Install PM2 globally using NPM.
+
+
+## Display project structure(Windows)
+When pair programming with ChatGPT, you may need to display the current project structure. 
+The list-files.bat can traverse directories and generate a list of effective files in the directory structure, while excluding those listed in the .gitignore file.
