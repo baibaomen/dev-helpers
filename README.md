@@ -8,7 +8,7 @@ With just a single line of code, you can install and configure Git, Nginx, and C
 At the end of the installation, input your domain name and email address, which are required by Certbot.
 
 ```
-sudo apt update && sudo apt install -y git && rm -rf dev-helpers && sleep 1 && git clone https://github.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-debian-with-nginx-and-certbot.sh && ./dev-helpers/setup-debian-with-nginx-and-certbot.sh
+sudo apt update && sudo apt install -y git && rm -rf dev-helpers && sleep 1 && git clone https://github.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-reverse-proxy-on-debian.sh && ./dev-helpers/setup-reverse-proxy-on-debian.sh
 ```
 
 In the above command, the following steps will be performed automatically:
