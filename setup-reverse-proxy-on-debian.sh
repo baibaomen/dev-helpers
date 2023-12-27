@@ -6,7 +6,7 @@ prompt_for_input() {
     local prompt_message="$1"
     local default_value="$2"
     while true; do
-        read -p "$prompt_message" input
+        read -e -p "$prompt_message" input
         input="${input:-$default_value}"
         if [ -n "$input" ]; then
             echo "$input"
@@ -18,8 +18,8 @@ prompt_for_input() {
 }
 
 # Prompting user for domain name, proxy URL, and email address with validation
-domain=$(prompt_for_input "Enter the listening domain (e.g., ca.baibaomen.com): " "")
-proxy_url=$(prompt_for_input "Enter the URL of the proxied site (e.g., http://127.0.0.1:8080): " "")
+domain=$(prompt_for_input "Enter the listening domain (e.g., ca-wechat.baibaomen.com): " "")
+proxy_url=$(prompt_for_input "Enter the URL of the proxied site (e.g., http://127.0.0.1:8081): " "")
 email=$(prompt_for_input "Enter your email address for certbot (default: baibaomen@gmail.com): " "baibaomen@gmail.com")
 
 # Checking if nginx is already installed
