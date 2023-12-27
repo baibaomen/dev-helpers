@@ -19,10 +19,10 @@ prompt_for_input() {
 
 # Prompting user for necessary inputs
 domain=$(prompt_for_input "Enter your domain (e.g., ca.baibaomen.com): " "")
-email=$(prompt_for_input "Enter your email address for certbot (default: baibaomen@gmail.com): " "baibaomen@gmail.com")
-internal_port=$(prompt_for_input "Enter the Docker internal port for KeyCloak (default: 8080): " "8080")
 keycloak_admin=$(prompt_for_input "Enter KeyCloak admin username: " "")
 keycloak_admin_password=$(prompt_for_input "Enter KeyCloak admin password: " "")
+email=$(prompt_for_input "Enter your email address for certbot (default: baibaomen@gmail.com): " "baibaomen@gmail.com")
+internal_port=$(prompt_for_input "Enter the Docker internal port for KeyCloak (default: 8080): " "8080")
 
 # Checking if Docker is installed
 if ! which docker > /dev/null 2>&1; then
