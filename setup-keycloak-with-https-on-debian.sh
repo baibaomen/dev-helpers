@@ -21,6 +21,8 @@ prompt_for_input() {
 domain=$(prompt_for_input "Enter your domain (e.g., ca.baibaomen.com): " "")
 email=$(prompt_for_input "Enter your email address for certbot (default: baibaomen@gmail.com): " "baibaomen@gmail.com")
 internal_port=$(prompt_for_input "Enter the Docker internal port for KeyCloak (default: 8080): " "8080")
+keycloak_admin=$(prompt_for_input "Enter KeyCloak admin username: " "")
+keycloak_admin_password=$(prompt_for_input "Enter KeyCloak admin password: " "")
 
 # Checking if Docker is installed
 if ! which docker > /dev/null 2>&1; then
@@ -34,6 +36,8 @@ fi
 # Starting KeyCloak container
 echo "Starting KeyCloak container..."
 sudo docker run -d -p ${internal_port}:8080 \
+  -e KEYCLOAK_ADMIN=${keycloak_admin} \
+  -e KEYCLOAK_ADMIN_PASSWORD=${keycloak_admin_password} \
   -e PROXY_ADDRESS_FORWARDING=true \
   -e REDIRECT_SOCKET=proxy-https \
   --restart always \
