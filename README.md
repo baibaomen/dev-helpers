@@ -49,4 +49,9 @@ The list-files.bat can traverse directories and generate a list of effective fil
 ```
 sudo apt update && sudo apt install -y git && rm -rf dev-helpers && sleep 1 && git clone https://github.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-keycloak-with-https-on-debian.sh && ./dev-helpers/setup-keycloak-with-https-on-debian.sh
 ```
+Or in China, you can use githubfast.com:
+
+```
+sudo apt update && sudo apt install -y git && rm -rf dev-helpers && sleep 1 && git clone https://githubfast.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-keycloak-with-https-on-debian.sh && ./dev-helpers/setup-keycloak-with-https-on-debian.sh
+```
 
