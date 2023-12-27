@@ -33,9 +33,20 @@ else
     echo "Docker is already installed."
 fi
 
+# Container name based on domain
+container_name="keycloak-${domain//./-}"
+
+# Stopping and removing existing KeyCloak container
+existing_container=$(sudo docker ps -aqf "name=${container_name}")
+if [ -n "$existing_container" ]; then
+    echo "Stopping and removing existing KeyCloak container named ${container_name}..."
+    sudo docker stop $existing_container
+    sudo docker rm $existing_container
+fi
+
 # Starting KeyCloak container
-echo "Starting KeyCloak container..."
-sudo docker run -d -p ${internal_port}:8080 \
+echo "Starting KeyCloak container named ${container_name}..."
+sudo docker run -d -p ${internal_port}:8080 --name ${container_name} \
   -e KEYCLOAK_ADMIN=${keycloak_admin} \
   -e KEYCLOAK_ADMIN_PASSWORD=${keycloak_admin_password} \
   -e PROXY_ADDRESS_FORWARDING=true \
@@ -43,7 +54,6 @@ sudo docker run -d -p ${internal_port}:8080 \
   --restart always \
   quay.io/keycloak/keycloak:latest \
   start --hostname ${domain} --proxy=edge
-
 
 # Checking if nginx is already installed
 if ! which nginx > /dev/null 2>&1; then
@@ -62,11 +72,21 @@ else
     echo "certbot is already installed."
 fi
 
-# Creating nginx configuration file
+# Define the proxy URL
+proxy_url="http://localhost:${internal_port}"
+
+# Removing existing nginx configuration if it exists
 config_file="/etc/nginx/sites-available/$domain"
-if [ ! -f "$config_file" ]; then
-    echo "Creating nginx configuration for $domain..."
-    cat <<EOF | sudo tee $config_file
+if [ -f "$config_file" ]; then
+    echo "Removing existing nginx configuration for $domain..."
+    sudo rm $config_file
+    sudo rm /etc/nginx/sites-enabled/$domain
+    sudo systemctl reload nginx
+fi
+
+# Creating new nginx configuration file
+echo "Creating nginx configuration for $domain..."
+cat <<EOF | sudo tee $config_file
 server {
     server_name $domain;
     
@@ -89,18 +109,13 @@ server {
     }
 }
 EOF
-else
-    echo "Nginx configuration for $domain already exists."
-fi
 
 # Enabling site and reloading nginx
-sudo ln -s /etc/nginx/sites-available/$domain /etc/nginx/sites-enabled/ 2>/dev/null || echo "Site already enabled."
+sudo ln -s /etc/nginx/sites-available/$domain /etc/nginx/sites-enabled/
 sudo systemctl reload nginx
 
 # Configuring SSL certificate with Certbot
 sudo certbot --nginx -d $domain --non-interactive --agree-tos --email $email
 
 # Completion message
-echo "KeyCloak installation with HTTPS reverse proxy completed successfully!"
-
-
+echo "KeyCloak installation with HTTPS reverse proxy completed successfully for ${domain}!"
