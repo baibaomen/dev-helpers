@@ -43,3 +43,10 @@ In the above command, the following steps will be performed automatically:
 ## Display project structure(Windows)
 When pair programming with ChatGPT, you may need to display the current project structure. 
 The list-files.bat can traverse directories and generate a list of effective files in the directory structure, while excluding those listed in the .gitignore file.
+
+
+## Setup KeyCloak with certbot(Debian)
+```
+sudo apt update && sudo apt install -y git && rm -rf dev-helpers && sleep 1 && git clone https://github.com/baibaomen/dev-helpers.git && chmod +x dev-helpers/setup-keycloak-with-https-on-debian.sh && ./dev-helpers/setup-keycloak-with-https-on-debian.sh
+```
+
