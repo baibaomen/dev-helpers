@@ -63,6 +63,10 @@ server {
         proxy_read_timeout 600s;
         proxy_send_timeout 600s;
         keepalive_timeout 600s;
+        
+        proxy_buffer_size   128k;
+        proxy_buffers   4 256k;
+        proxy_busy_buffers_size   256k;
     }
 }
 EOF
