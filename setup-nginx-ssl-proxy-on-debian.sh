@@ -33,7 +33,7 @@ fi
 
 # 创建Nginx配置文件
 config_file="/etc/nginx/sites-available/$domain"
-ln -s_file="/etc/nginx/sites-enabled/$domain"
+ln-s_file="/etc/nginx/sites-enabled/$domain"
 
 echo "创建Nginx配置文件：$config_file"
 
@@ -66,7 +66,7 @@ server {
 EOF
 
 # 激活新的站点配置
-ln -s $config_file $ln -s_file
+ln -s $config_file $ln-s_file
 
 # 检查Nginx配置
 if nginx -t; then
