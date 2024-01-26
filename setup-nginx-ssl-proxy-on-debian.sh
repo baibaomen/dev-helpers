@@ -19,21 +19,35 @@ echo "请输入您的电子邮件地址（默认：baibaomen@gmail.com）: "
 read -e email
 email=${email:-baibaomen@gmail.com}
 
+echo "请选择传递到目标站点的Host选项："
+echo "1. 使用请求地址的Host"
+echo "2. 使用目标站点的Host"
+read -e host_choice
+
+# 根据用户选择设置Host变量
+if [ "$host_choice" = "1" ]; then
+    proxy_host="\$http_host"
+elif [ "$host_choice" = "2" ]; then
+    proxy_host="\$host"
+else
+    echo "无效选择，脚本退出。"
+    exit 1
+fi
+
 # 检查并安装Nginx和Certbot
 echo "检查Nginx和Certbot是否安装..."
 if ! command -v nginx > /dev/null 2>&1; then
     echo "Nginx未安装，正在安装Nginx..."
-    apt-get update && apt-get install -y nginx
+    apt update && apt install -y nginx
 fi
 
 if ! command -v certbot > /dev/null 2>&1; then
     echo "Certbot未安装，正在安装Certbot..."
-    apt-get update && apt-get install -y certbot python3-certbot-nginx
+    apt install -y certbot python3-certbot-nginx
 fi
 
 # 创建Nginx配置文件
-config_file="/etc/nginx/sites-available/$domain"
-ln-s_file="/etc/nginx/sites-enabled/$domain"
+config_file="/etc/nginx/conf.d/$domain.conf"
 
 echo "创建Nginx配置文件：$config_file"
 
@@ -46,9 +60,7 @@ server {
     
     location / {
         proxy_pass $target;
-        proxy_redirect off;
-        proxy_set_header Host \$host;
-        proxy_http_version 1.1;
+        proxy_set_header Host $proxy_host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
@@ -58,15 +70,16 @@ server {
         proxy_send_timeout 600s;
         keepalive_timeout 600s;
 
-        proxy_buffer_size   128k;
-        proxy_buffers   4 256k;
-        proxy_busy_buffers_size   256k;
+        chunked_transfer_encoding off;
+        proxy_cache off;
+        proxy_buffering off;
+        proxy_redirect off;
+        proxy_ssl_server_name on;
+
+        proxy_pass_request_headers on;
     }
 }
 EOF
-
-# 激活新的站点配置
-ln -s $config_file $ln-s_file
 
 # 检查Nginx配置
 if nginx -t; then
