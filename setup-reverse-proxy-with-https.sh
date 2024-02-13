@@ -17,6 +17,28 @@ prompt_for_input() {
     done
 }
 
+# Detecting OS and setting up variables for package management
+OS=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+if [[ $OS == *"Ubuntu"* ]]; then
+    PKG_MANAGER="apt"
+    PKG_UPDATE="apt update"
+    PKG_INSTALL="apt install -y"
+elif [[ $OS == *"CentOS"* ]]; then
+    # CentOS 8 and above uses dnf, CentOS 7 and below uses yum
+    if [[ $(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1) -ge 8 ]]; then
+        PKG_MANAGER="dnf"
+    else
+        PKG_MANAGER="yum"
+        # Enabling EPEL repository for CentOS 7 to install certbot
+        sudo yum install -y epel-release
+    fi
+    PKG_UPDATE="$PKG_MANAGER makecache"
+    PKG_INSTALL="$PKG_MANAGER install -y"
+else
+    echo "Unsupported OS"
+    exit 1
+fi
+
 # Prompting user for domain name, proxy URL, host header, and email address with validation
 domain=$(prompt_for_input "Enter the listening domain (e.g., ca-wechat.baibaomen.com): " "")
 proxy_url=$(prompt_for_input "Enter the URL of the proxied site (e.g., http://127.0.0.1:8081): " "")
@@ -26,8 +48,8 @@ email=$(prompt_for_input "Enter your email address for certbot (default: baibaom
 # Checking if nginx is already installed
 if ! which nginx > /dev/null 2>&1; then
     echo "Installing nginx..."
-    sudo apt update
-    sudo apt install -y nginx
+    sudo $PKG_UPDATE
+    sudo $PKG_INSTALL nginx
 else
     echo "nginx is already installed."
 fi
@@ -35,7 +57,11 @@ fi
 # Checking if certbot is already installed
 if ! which certbot > /dev/null 2>&1; then
     echo "Installing certbot..."
-    sudo apt install -y certbot python3-certbot-nginx
+    if [[ $PKG_MANAGER == "apt" ]]; then
+        sudo $PKG_INSTALL certbot python3-certbot-nginx
+    else
+        sudo $PKG_INSTALL certbot python3-certbot-nginx
+    fi
 else
     echo "certbot is already installed."
 fi
@@ -69,7 +95,6 @@ server {
         proxy_buffering off;
         proxy_redirect off;
         proxy_ssl_server_name on;
-
         proxy_pass_request_headers on;
     }
 }
