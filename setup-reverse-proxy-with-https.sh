@@ -19,21 +19,10 @@ prompt_for_input() {
 
 # Detecting OS and setting up variables for package management
 OS=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-if [[ $OS == *"Ubuntu"* ]]; then
+if [[ $OS == *"Debian"* ]]; then
     PKG_MANAGER="apt"
     PKG_UPDATE="apt update"
     PKG_INSTALL="apt install -y"
-elif [[ $OS == *"CentOS"* ]]; then
-    # CentOS 8 and above uses dnf, CentOS 7 and below uses yum
-    if [[ $(cat /etc/centos-release | tr -dc '0-9.'|cut -d \. -f1) -ge 8 ]]; then
-        PKG_MANAGER="dnf"
-    else
-        PKG_MANAGER="yum"
-        # Enabling EPEL repository for CentOS 7 to install certbot
-        sudo yum install -y epel-release
-    fi
-    PKG_UPDATE="$PKG_MANAGER makecache"
-    PKG_INSTALL="$PKG_MANAGER install -y"
 else
     echo "Unsupported OS"
     exit 1
@@ -57,11 +46,7 @@ fi
 # Checking if certbot is already installed
 if ! which certbot > /dev/null 2>&1; then
     echo "Installing certbot..."
-    if [[ $PKG_MANAGER == "apt" ]]; then
-        sudo $PKG_INSTALL certbot python3-certbot-nginx
-    else
-        sudo $PKG_INSTALL certbot python3-certbot-nginx
-    fi
+    sudo $PKG_INSTALL certbot python3-certbot-nginx
 else
     echo "certbot is already installed."
 fi
@@ -103,7 +88,7 @@ else
     echo "Nginx configuration for $domain already exists."
 fi
 
-# No need to create a symlink, so we can reload nginx directly
+# Reloading nginx
 sudo systemctl reload nginx
 
 # Configuring SSL certificate with Certbot
